@@ -7,6 +7,8 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.mysqldb import MySQL
 import urllib
 import string
+import random
+from datetime import datetime
 import simplejson as json
 
 
@@ -26,27 +28,48 @@ bootstrap = Bootstrap(app)
 @app.route('/')
 def home():
     wiki_data = get_wiki()
+    print wiki_data
     for key, value in wiki_data.iteritems():
         title = clean_title(value['title'])
-        print title
+        excerpt = value['extract']
     giffy_data = get_giffy(title)
+    if not giffy_data:
+        row = get_random_row()
+        giffy_data['title'] = row.title
+        giffy_data['excerpt'] = row.excerpt
+        giffy_data['image_url'] = row.image_url      
+    else:
+        giffy_data['title'] = title
+        giffy_data['excerpt'] = excerpt
+        record_data(giffy_data)
+    print type(giffy_data)
     print giffy_data
-    return render_template('index.html')
+    return render_template('index.html', giffy=giffy_data)
 
-#database models
+#database model
 class Image(db.Model):
     __tablename__ ='images'
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(64), unique=True)
-    datetime = db.Column(db.DateTime, unique=True)
+    image_url = db.Column(db.String(64), unique=True)
+    title = db.Column(db.String(64), unique=True)
+    excerpt = db.Column(db.Text(256))
+    created = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
     
-    def __init__(self, url):
-        self.url = url
-    
-    def __repr__(self):
-        return '<Image %r>' % self.url
-        
+
 #helper methods
+#writes data to the database
+def record_data(giffy_record):
+    record = Image(**giffy_record)
+    print record
+    db.session.add(record)
+    db.session.commit()
+    return
+    
+def get_random_row():
+    rand = random.randrange(0, Image.query.count())
+    row = Image.query.get(rand)
+    return row
+
 #gets a json object from a URL
 def get_json(URL):
     fileObj = urllib.urlopen(URL)
@@ -61,7 +84,8 @@ def get_wiki():
     return data
 
 def clean_title(title):
-    title = title.replace("-", " ")
+    exclude = set(string.punctuation)
+    title = ''.join(ch for ch in title if ch not in exclude)
     printable = set(string.printable)
     title = filter(lambda x: x in printable, title) #strip non-ASCII characters
     return title
@@ -73,9 +97,10 @@ def get_giffy(title):
      title = title.replace(" ", "+")
      url = url + title
      json = get_json(url)
-     raw_data = dict(json['data'])
+     raw_data = json['data']
      if raw_data:
-         data['image_url'] = raw_data['fixed_width_downsampled_url'].encode('ascii')
+         for item in raw_data:
+             data['image_url'] = item['images']['original']['url']
      return data
          
 

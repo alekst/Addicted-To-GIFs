@@ -2,6 +2,14 @@
 {% block title %} Giffy All Around{% endblock %}
 {% block content %}
 	<div class = "container">
-		<h1>HELLO</h1>
+		<div class="row">
+			
+				<div class = "clearfix">
+					<img src = "{{giffy.image_url}}">
+				</div>
+				<h3>{{giffy.title}}</h3>
+				<p>{{giffy.excerpt|safe}}</p>
+		
+		</div>
 	</div>
 {% endblock %}
