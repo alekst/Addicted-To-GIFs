@@ -1,15 +1,29 @@
 {% extends "bootstrap/base.html" %}
 {% block title %} Giffy All Around{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+</div>
+{% endblock %}
 {% block content %}
 	<div class = "container">
 		<div class="row">
-			
-				<div class = "clearfix">
-					<img src = "{{giffy.image_url}}">
+			<div class="content">
+				<br />
+				<div class="row">
+					{% for item in giffy %}
+					<div class="center-block">
+						<div class="col-md-4 col-sm-3 col-md-offset-2">
+							<div class = "clearfix">
+								<img src = "{{item.image_url}}">
+							</div>
+							<h3>{{item.title}}</h3>
+							<p>{{item.excerpt|safe}}</p>
+						</div>	
+					</div>
+					{% endfor %}
 				</div>
-				<h3>{{giffy.title}}</h3>
-				<p>{{giffy.excerpt|safe}}</p>
-		
+			</div>
 		</div>
 	</div>
 {% endblock %}

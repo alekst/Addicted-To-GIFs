@@ -27,6 +27,25 @@ bootstrap = Bootstrap(app)
 #routes
 @app.route('/')
 def home():
+    giffy = []
+    for i in xrange(6):
+        giffy_data = get_data()
+        giffy.append(giffy_data)  
+    print giffy 
+    return render_template('index.html', giffy=giffy)
+
+#database model
+class Image(db.Model):
+    __tablename__ ='images'
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.String(64), unique=True)
+    title = db.Column(db.String(64), unique=True)
+    excerpt = db.Column(db.Text(256))
+    created = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    
+
+#helper methods
+def get_data():
     wiki_data = get_wiki()
     print wiki_data
     for key, value in wiki_data.iteritems():
@@ -42,21 +61,8 @@ def home():
         giffy_data['title'] = title
         giffy_data['excerpt'] = excerpt
         record_data(giffy_data)
-    print type(giffy_data)
-    print giffy_data
-    return render_template('index.html', giffy=giffy_data)
+    return giffy_data
 
-#database model
-class Image(db.Model):
-    __tablename__ ='images'
-    id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(64), unique=True)
-    title = db.Column(db.String(64), unique=True)
-    excerpt = db.Column(db.Text(256))
-    created = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-    
-
-#helper methods
 #writes data to the database
 def record_data(giffy_record):
     record = Image(**giffy_record)
@@ -66,7 +72,8 @@ def record_data(giffy_record):
     return
     
 def get_random_row():
-    rand = random.randrange(0, Image.query.count())
+    #rand = 1
+    rand = random.randrange(1, Image.query.count())
     row = Image.query.get(rand)
     return row
 
@@ -100,7 +107,7 @@ def get_giffy(title):
      raw_data = json['data']
      if raw_data:
          for item in raw_data:
-             data['image_url'] = item['images']['original']['url']
+             data['image_url'] = item['images']['downsized_medium']['url']
      return data
          
 
