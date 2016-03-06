@@ -16,7 +16,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config')
-app.config.from_pyfile('config.py')
+#app.config.from_pyfile('config.py')
 
 
 manager = Manager(app)
@@ -107,7 +107,7 @@ def get_giffy(title):
      raw_data = json['data']
      if raw_data:
          for item in raw_data:
-             data['image_url'] = item['images']['downsized_medium']['url']
+             data['image_url'] = item['images']['fixed_height']['url']
      return data
          
 
