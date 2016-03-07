@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template
-from flask.ext.script import Manager
+from flask.ext.script import Manager, Server
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.bootstrap import Bootstrap
@@ -16,13 +16,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config')
-#app.config.from_pyfile('config.py')
+app.config.from_pyfile('config.py', silent=True)
 
 
 manager = Manager(app)
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 
+server = Server(host="0.0.0.0", port=5000)
+manager.add_command("runserver", server)
 
 #routes
 @app.route('/')
@@ -40,8 +42,10 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(64), unique=True)
     title = db.Column(db.String(64), unique=True)
-    excerpt = db.Column(db.Text(256))
+    excerpt = db.Column(db.Text(256)),
     created = db.Column(db.TimeStamp, server_default=db.func.now(), onupdate=db.func.now())
+
+
     
 
 #helper methods
