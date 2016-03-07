@@ -41,7 +41,7 @@ class Image(db.Model):
     image_url = db.Column(db.String(64), unique=True)
     title = db.Column(db.String(64), unique=True)
     excerpt = db.Column(db.Text(256))
-    created = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    created = db.Column(db.TimeStamp, server_default=db.func.now(), onupdate=db.func.now())
     
 
 #helper methods
