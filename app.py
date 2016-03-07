@@ -46,8 +46,6 @@ class Image(db.Model):
     created = db.Column(db.TimeStamp, server_default=db.func.now(), onupdate=db.func.now())
 
 
-    
-
 #helper methods
 def get_data():
     wiki_data = get_wiki()
