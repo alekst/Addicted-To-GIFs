@@ -42,14 +42,14 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(64), unique=True)
     title = db.Column(db.String(64), unique=True)
-    excerpt = db.Column(db.Text(256)),
-    created = db.Column(db.TimeStamp, server_default=db.func.now(), onupdate=db.func.now())
+    excerpt = db.Column(db.Text(256))
+    created = db.Column(db.DateTime)
 
 
 #helper methods
 def get_data():
     wiki_data = get_wiki()
-    print wiki_data
+    #print wiki_data
     for key, value in wiki_data.iteritems():
         title = clean_title(value['title'])
         excerpt = value['extract']
@@ -62,6 +62,7 @@ def get_data():
     else:
         giffy_data['title'] = title
         giffy_data['excerpt'] = excerpt
+        giffy_data['created'] = datetime.utcnow()
         record_data(giffy_data)
     return giffy_data
 
