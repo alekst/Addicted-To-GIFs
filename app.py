@@ -30,7 +30,7 @@ manager.add_command("runserver", server)
 @app.route('/')
 def home():
     giffy = []
-    for i in xrange(6):
+    for i in xrange(3):
         giffy_data = get_data()
         giffy.append(giffy_data)  
     print giffy 
@@ -110,7 +110,7 @@ def get_giffy(title):
      raw_data = json['data']
      if raw_data:
          for item in raw_data:
-             data['image_url'] = item['images']['fixed_height']['url']
+             data['image_url'] = item['images']['fixed_width']['url']
      return data
          
 
