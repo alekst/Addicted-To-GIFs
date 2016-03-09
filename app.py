@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask.ext.script import Manager, Server
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -27,7 +27,7 @@ server = Server(host="0.0.0.0", port=5000)
 manager.add_command("runserver", server)
 
 #routes
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
     giffy = []
     for i in xrange(3):
@@ -54,8 +54,10 @@ def get_data():
         title = clean_title(value['title'])
         excerpt = value['extract']
     giffy_data = get_giffy(title)
+    row = 0
     if not giffy_data:
-        row = get_random_row()
+        while not row:
+            row = get_random_row()
         giffy_data['title'] = row.title
         giffy_data['excerpt'] = row.excerpt
         giffy_data['image_url'] = row.image_url      
@@ -77,6 +79,8 @@ def record_data(giffy_record):
 def get_random_row():
     #rand = 1
     rand = random.randrange(1, Image.query.count())
+    # print rand
+    # print Image.query.count()
     row = Image.query.get(rand)
     return row
 
